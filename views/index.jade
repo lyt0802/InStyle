@@ -1,0 +1,26 @@
+extends layout
+
+block title
+    | Home
+
+block content
+    //-figure that out later
+    if userexists != ''
+        h1= userexists
+    else if inexistentEmail != ''
+        h1= inexistentEmail
+    else if wrongPassword != ''
+        h1= wrongPassword
+
+    form(action='/login', method='POST')
+        input(type='email', name='email')
+        input(type='password', name='password')
+        button(type='submit') Submit
+        button(type='reset') Reset
+
+    form(action='/signup', method='POST')
+        input(type='email', name='email')
+        input(type='password', name='password')
+        button(type='submit') Sign Up
+        button(type='reset') Reset
+

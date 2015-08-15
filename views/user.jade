@@ -1,0 +1,9 @@
+extends layout
+
+block title
+    | User
+
+block content
+    h1= user.email
+    form(action='/follow', method='POST')
+        button(type='submit') Follow

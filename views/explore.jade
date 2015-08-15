@@ -1,0 +1,59 @@
+extends layout
+
+block title
+    | Explore
+
+block styles
+    link(rel='stylesheet', type='test/css', href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.4.0/animate.min.css')
+
+block content 
+    div(class='container')
+        if email
+        div(class='center-block text-center')
+            //- todolater: First swipe results in text movement
+            h1 Your Email is #{email}
+            for image, index in images
+                if index == 0
+                    img(src='#{image.url}', height=200,width=200, id='#{index}', data-id='#{image._id}')
+                else
+                    img(src='#{image.url}', height=200,width=200, id='#{index}', data-id='#{image._id}', class='hidden')
+            br
+            a(href='/profile') Profile 
+
+block script
+    script.
+        $(document).ready(function() { 
+            $('img').on('swiperight', function() {
+                var originalId = parseInt($(this).attr('id'));
+                console.log(originalId);
+                var nextId = originalId + 1;
+                $(this).addClass('animated bounceOutRight');
+                var imageId = $(this).data('id');
+                setTimeout(function(){
+                    //alert(nextId);
+                    $('#' + originalId).remove();
+                    $('#' + nextId).removeClass('hidden').addClass('animated bounceInUp');
+                    $.post('/upvote/' + imageId, {}, function(data, status) {
+                        alert(data);
+                    })
+                },500);
+            });
+            $('img').on('swipeleft', function() {
+                var originalId = parseInt($(this).attr('id'));
+                console.log(originalId);
+                var nextId = originalId + 1;
+                $(this).addClass('animated bounceOutLeft');
+                var imageId = $(this).data('id');
+                setTimeout(function(){
+                    //alert(nextId);
+                    $('#' + originalId).remove();
+                    $('#' + nextId).removeClass('hidden').addClass('animated bounceInUp');
+                    $.post('/downvote/' + imageId, {}, function(data, status) {
+                        alert(data);
+                    })
+                },500);
+            });
+            $('img').on('dragstart', function(event){
+                event.preventDefault();
+            });
+        });

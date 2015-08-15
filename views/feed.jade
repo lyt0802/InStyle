@@ -1,0 +1,24 @@
+extends layout
+
+block title
+    | Feed
+
+block content
+    h1 Feed
+    form(action='/search', method='POST', id='searchForm')
+        input(type='text', name='search')
+        button(type='button', id='search') Search
+
+    div(id='searchResults')
+
+block script
+    script.
+        $(document).ready(function() {
+            $('#search').click(function() {
+                var data = $('#searchForm').serialize();
+                $.post('/search', data, function(res) {
+                    alert(res);
+                    $('#searchResults').append(res);
+                });
+            });
+        });

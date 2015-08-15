@@ -1,0 +1,47 @@
+extends layout
+
+block title 
+    | Profile
+
+block content 
+    a(href='/followers')
+        h4 #Followers: #{ user.followers.length }
+    a(href='/following')
+        h4 #Following: #{ user.following.length }
+    h4 #Bookmarks: #{ user.bookmarks.length }
+    
+    h4 User: #{user.email}
+    for image in user.images
+        img(src='#{image.url}', height=200, width=200)
+
+    form(action='/upload', method='POST', enctype='multipart/form-data', id='formUpload')
+        input(type='file', name='image', accept='image/*', onchange='picChange(event)')
+        button(type='submit', id='upload') Upload
+
+    a(href='/feed') Feed
+    a(href='/uploadAlot') Upload Alot
+    //-script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
+    //-script.
+        //-$(document).ready(function() {
+            //-$('#upload').click(function() {
+                //-var data = $('#formupload').serialize();
+                //-//var imagedata = $('input[type=file]')[0].files;
+                //-var imagedata = new formdata($('#formupload')[0]);
+                //-//-alert(imagedata);
+                //-//-$.post('/upload', imagedata, function(data, status) {
+                    //-//-console.log(data);
+                    //-//-console.log(status);
+                //-//-});
+                //-$.ajax({
+                    //-url: '/upload',
+                    //-type: 'post',
+                    //-data: imagedata,
+                    //-success: function(data, status) { console.log(data) },
+                    //-error: function(data, status) { console.log(data) },
+                    //-cache: false,
+                    //-contenttype: false,
+                    //-processdata: false
+                //-});
+            //-});
+        //-});
+

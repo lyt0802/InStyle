@@ -1,0 +1,9 @@
+extends layout
+
+block title
+    | Upload Alot :D
+
+block content
+    form(method='POST', action='/uploadAlot', enctype='multipart/form-data')
+        input(type='file', name='images', multiple) 
+        button(type='submit') Upload
