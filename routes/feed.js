@@ -121,8 +121,8 @@ module.exports = function(app){
                 }
             });
         }
-        
     });
+
     app.post('/upvote/:id', app.common.isLoggedIn, function(req, res, next) {
         Image.findById(req.params.id, function(err, image) {
             //todolater: check about isolation (ACID)

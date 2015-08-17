@@ -5,4 +5,11 @@ block title
 
 block content
     h1 Followers Page
-    h1= user
+    //-h1= user
+
+    for follower in user.followers
+        //-todolater: list out followers as links to their profile
+        img(src='#{follower.profilePicture.url}', height=200,width=200, class='img-circle', id='profilePicture')
+        a(href='/profile/' + follower._id)
+            h4= follower.firstName + ' ' + follower.lastName
+        br

@@ -3,7 +3,12 @@ extends layout
 block title 
     | Profile
 
-block content 
+block content
+
+    //todolater: conditional to check if urself or if followed this person
+    form(action='/follow', method='POST')
+        input(type='hidden',name='id', value='#{user._id}')
+        button(type='submit') Follow
     div(class='container')
         div(class='row')
             div(class='col-xs-3')
