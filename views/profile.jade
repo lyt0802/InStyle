@@ -4,44 +4,80 @@ block title
     | Profile
 
 block content 
-    a(href='/followers')
-        h4 #Followers: #{ user.followers.length }
-    a(href='/following')
-        h4 #Following: #{ user.following.length }
-    h4 #Bookmarks: #{ user.bookmarks.length }
-    
-    h4 User: #{user.email}
-    for image in user.images
-        img(src='#{image.url}', height=200, width=200)
+    div(class='container')
+        div(class='row')
+            div(class='col-xs-3')
+                if user.profilePicture
+                    img(src='#{user.profilePicture.url}', height=200, width=200, class='img-circle', id='profilePicture', data-toggle='modal', data-target='#profilePictureModal')
+                else
+                    img(src='/static/images/defaultProfilePicture.jpeg', height=200, width=200, class='img-circle', id='profilePicture', data-toggle='modal', data-target='#profilePictureModal')
+                div(class='modal fade', id='profilePictureModal')
+                    div(class='modal-dialog')
+                        div(class='modal-content')
+                            div(class='modal-body')
+                                form(action='/upload-profile-picture', method='POST', enctype='multipart/form-data', id='formUpload', class='form')
+                                    input(type='file',name='image', accept='image/*' )
+                                    button(type='submit', id='upload', class='btn btn-primary') Upload Profile Picture
+            div(class='col-xs-9')
+                a(href='/followers')
+                    h4 #Followers: #{ user.followers.length }
+                a(href='/following')
+                    h4 #Following: #{ user.following.length }
+                a(href='/bookmarks')
+                    h4 #Bookmarks: #{ user.bookmarks.length }
+        h1 #{user.firstName} #{user.lastName}
 
-    form(action='/upload', method='POST', enctype='multipart/form-data', id='formUpload')
-        input(type='file', name='image', accept='image/*', onchange='picChange(event)')
-        button(type='submit', id='upload') Upload
+        
+        for image in user.images
+            div(class='imageContainer')
+                img(src='#{image.url}', height=200, width=200, data-toggle='modal', data-target='##{image._id}')
+                div(class='modal fade', id='#{image._id}')
+                    div(class='modal-dialog')
+                        div(class='modal-content')
+                            div(class='modal-body')
+                                h2 Description: #{image.description}
+                                h4= image.tags
+                                button(type='button', class='editImage btn btn-primary') Edit
+                                form(method='POST', action='/imageInfo/' + '#{image._id}', id='imageInfoForm', class='form hidden')
+                                    input(type='hidden', name='_method', value='PUT')
+                                    textarea(form='imageInfoForm', name='description', placeholder='Description') #{image.description}
+                                    input(type='text', data-role='tagsinput', name='tags', value='#{image.tags}',  placeholder='Tags')
+                                    button(type='submit',class='edit btn btn-primary') Submit
+                                form(method='POST', action='/deleteImage/' + '#{image._id}', class='form hidden')
+                                    input(type='hidden', name='_method', value='DELETE')
+                                    button(type='button', class='delete btn btn-danger') Delete
 
-    a(href='/feed') Feed
-    a(href='/uploadAlot') Upload Alot
-    //-script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
-    //-script.
-        //-$(document).ready(function() {
-            //-$('#upload').click(function() {
-                //-var data = $('#formupload').serialize();
-                //-//var imagedata = $('input[type=file]')[0].files;
-                //-var imagedata = new formdata($('#formupload')[0]);
-                //-//-alert(imagedata);
-                //-//-$.post('/upload', imagedata, function(data, status) {
-                    //-//-console.log(data);
-                    //-//-console.log(status);
-                //-//-});
-                //-$.ajax({
-                    //-url: '/upload',
-                    //-type: 'post',
-                    //-data: imagedata,
-                    //-success: function(data, status) { console.log(data) },
-                    //-error: function(data, status) { console.log(data) },
-                    //-cache: false,
-                    //-contenttype: false,
-                    //-processdata: false
-                //-});
-            //-});
-        //-});
+        form(action='/upload', method='POST', enctype='multipart/form-data', id='formUpload')
+            input(type='file', name='image', accept='image/*')
+            button(type='submit', id='upload') Upload
 
+        a(href='/feed') Feed
+        br
+        a(href='/uploadAlot') Upload Alot
+        br
+        a(href='/explore') Explore
+        br
+        
+
+block script
+    script.
+        $(document).ready(function() {
+            $('.delete').on('click', function() {
+                var form = $(this).parent();
+                var data = form.serialize();
+                $.post(form.attr('action'), data, function(res) {
+                    if (res === 'true') {
+                        var containingDiv = form.parent();
+                        containingDiv.remove();
+                    } else {
+                        alert(res);
+                    }
+                });
+            });
+            $('.editImage').on('click', function() {
+                $(this).addClass('hidden');
+                $(this).prevAll().addClass('hidden');
+                $(this).nextAll().removeClass('hidden');
+
+            });
+        });

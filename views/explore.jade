@@ -22,7 +22,15 @@ block content
 
 block script
     script.
-        $(document).ready(function() { 
+        $(document).ready(function() {
+            //todolater: implement swipedown for bookmark. temporarily click
+            $('img').on('click', function(){
+                imageId = $(this).data('id');
+                $(this).addClass('animated bounce');
+                $.post('/bookmark/' + imageId, {}, function(data, status){
+                    alert(data);
+                });
+            });
             $('img').on('swiperight', function() {
                 var originalId = parseInt($(this).attr('id'));
                 console.log(originalId);

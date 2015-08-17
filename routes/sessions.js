@@ -4,8 +4,8 @@ module.exports = function(app){
     app.get('/profile', app.common.isLoggedIn, function(req,res){
         //console.log(req.user);
         User.findById(req.user._id)
-            .select('email followers following images bookmarks')
-            .populate('images')
+            .select('email firstName lastName followers following images bookmarks profilePicture')
+            .populate('images profilePicture')
             .exec(function(err, user) {
                 res.render('profile.jade', { user: user}); 
         });
@@ -22,7 +22,7 @@ module.exports = function(app){
     app.get('/followers', app.common.isLoggedIn, function(req,res){
         User.findById(req.user._id)
             .select('followers email')
-            .populate('followers')
+            .populate('followers', {select: 'email'})
             .exec(function(err,user){
                 res.render('followers.jade', {user: user});
             });
@@ -30,7 +30,7 @@ module.exports = function(app){
     app.get('/following', app.common.isLoggedIn, function(req,res){
         User.findById(req.user._id)
             .select('following email')
-            .populate('following')
+            .populate('following',{select: 'email'})
             .exec(function(err,user){
                 res.render('following.jade', {user: user});
             });

@@ -2,6 +2,8 @@ doctype html
 html
     head
         link(rel='stylesheet', type='text/css', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
+        link(rel='stylesheet', type='text/css', href='/static/css/bootstrap-tagsinput.css')
+        link(rel='stylesheet', type='text/css', href='/static/css/index.css')
         block styles
         title
             block title
@@ -13,4 +15,5 @@ html
         script.
             $.mobile.autoInitializePage = false;
         script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js')
+        script(src='/static/js/bootstrap-tagsinput.js')
         block script

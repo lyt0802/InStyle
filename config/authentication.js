@@ -2,6 +2,7 @@ var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 
 var User = require('../models/user');
+var Image = require('../models/image');
 
 passport.serializeUser(function(User, done) {
     done(null, User.id);
@@ -23,6 +24,8 @@ passport.use('local-signup', new localStrategy({usernameField: 'email', password
                     return done(null, false, req.flash('userexists', 'The email you entered has an asssociated account'));
                 } else {
                     var newUser = new User();
+                    newUser.firstName = req.body.firstName;
+                    newUser.lastName = req.body.lastName;
                     newUser.email = email;
                     newUser.password = newUser.generateHash(password);
                     newUser.save(function(err) {
