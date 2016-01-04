@@ -8,15 +8,20 @@ block styles
 
 block content 
     div(class='container')
-        if email
         div(class='center-block text-center')
             //- todolater: First swipe results in text movement
             h1 Your Email is #{email}
             for image, index in images
                 if index == 0
-                    img(src='#{image.url}', height=200,width=200, id='#{index}', data-id='#{image._id}')
+                    div(class='imageContainer')
+                        img(src='#{image.url}', height=200,width=200, id='#{index}', data-id='#{image._id}')
+                        h4= image.description
+                        h4= image.tags
                 else
-                    img(src='#{image.url}', height=200,width=200, id='#{index}', data-id='#{image._id}', class='hidden')
+                    div(class='imageContainer hidden')
+                        img(src='#{image.url}', height=200,width=200, id='#{index}', data-id='#{image._id}')
+                        h4= image.description
+                        h4= image.tags
             br
             a(href='/profile') Profile 
 
@@ -24,9 +29,13 @@ block script
     script.
         $(document).ready(function() {
             //todolater: implement swipedown for bookmark. temporarily click
-            $('img').on('click', function(){
+            $('img').on('swipedown', function(){
                 imageId = $(this).data('id');
                 $(this).addClass('animated bounce');
+                var that = $(this);
+                setTimeout(function() {
+                   that.removeClass('animated bounce'); 
+                }, 500);
                 $.post('/bookmark/' + imageId, {}, function(data, status){
                     alert(data);
                 });
@@ -37,12 +46,13 @@ block script
                 var nextId = originalId + 1;
                 $(this).addClass('animated bounceOutRight');
                 var imageId = $(this).data('id');
+                var divContainer = $(this).parent();
                 setTimeout(function(){
                     //alert(nextId);
-                    $('#' + originalId).remove();
-                    $('#' + nextId).removeClass('hidden').addClass('animated bounceInUp');
+                    divContainer.remove();
+                    $('#' + nextId).parent().removeClass('hidden').addClass('animated bounceInUp');
                     $.post('/upvote/' + imageId, {}, function(data, status) {
-                        alert(data);
+                        console.log(data);
                     })
                 },500);
             });
@@ -54,8 +64,8 @@ block script
                 var imageId = $(this).data('id');
                 setTimeout(function(){
                     //alert(nextId);
-                    $('#' + originalId).remove();
-                    $('#' + nextId).removeClass('hidden').addClass('animated bounceInUp');
+                    $('#' + originalId).parent().remove();
+                    $('#' + nextId).parent().removeClass('hidden').addClass('animated bounceInUp');
                     $.post('/downvote/' + imageId, {}, function(data, status) {
                         alert(data);
                     })

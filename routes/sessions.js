@@ -7,10 +7,31 @@ module.exports = function(app){
             .select('email firstName lastName followers following images bookmarks profilePicture')
             .populate('images profilePicture')
             .exec(function(err, user) {
-                res.render('profile.jade', { user: user}); 
+                var message = '';
+                if (!req.user.active) {
+                    message = 'Please verify your email.';
+                }
+                res.render('profile.jade', { user: user, verify: message});
         });
     });
-    
+
+    app.get('/verify/:id', function(req, res) {
+        User.findById(req.params.id)
+            .exec(function(err, user) {
+                if (err) console.log(err);
+                else {
+                    user.active = true;
+                    user.save(function(err) {
+                        if (err) console.log(err);
+                        else {
+                            req.flash('verified', 'Your account has been verified.');
+                            res.redirect('/');
+                        }
+                    });
+                }
+            });
+    });
+
     app.get('/profile/:id', app.common.isLoggedIn, function(req,res){
         User.findById(req.params.id)
             .select('email firstName lastName followers following images bookmarks profilePicture')
@@ -49,8 +70,8 @@ module.exports = function(app){
             .populate('following', 'email firstName lastName profilePicture')
             .exec(function(err,user){
                 User.populate(user, {
-                    path: 'following.profilePicture', 
-                    model: 'Image', 
+                    path: 'following.profilePicture',
+                    model: 'Image',
                     select: 'url'
                 }, function(err, fullUser) {
                     res.render('following.jade', {user: user});

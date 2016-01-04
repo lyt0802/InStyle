@@ -4,6 +4,15 @@ var localStrategy = require('passport-local').Strategy;
 var User = require('../models/user');
 var Image = require('../models/image');
 
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'instyledonotreply@gmail.com',
+        pass: 'svrcyzgrzpekuhxd'
+    }
+});
+
 passport.serializeUser(function(User, done) {
     done(null, User.id);
 });
@@ -28,10 +37,25 @@ passport.use('local-signup', new localStrategy({usernameField: 'email', password
                     newUser.lastName = req.body.lastName;
                     newUser.email = email;
                     newUser.password = newUser.generateHash(password);
-                    newUser.save(function(err) {
-                        if (err) throw err;
-                        return done(null, newUser);
-                    });
+                    if (password === req.body.confirmationPassword) {
+                        newUser.save(function(err) {
+                            if (err) throw err;
+                            else {
+                                transporter.sendMail({
+                                    from: 'instyledonotreply@gmail.com',
+                                    to: newUser.email,
+                                    subject: 'InStyle: Verification',
+                                    text: '192.168.1.254:3000/verify/' + newUser._id
+                                }, function(err, info) {
+                                    if (err) console.log(err);
+                                    else console.log('Message Sent: ' + info.response);
+                                });
+                                return done(null, newUser);
+                            }
+                        });
+                    } else {
+                        return done(null, false, req.flash('passwordmismatch', 'The passwords you entered did not match'));
+                    }
                 }
             });
         });

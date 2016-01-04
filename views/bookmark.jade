@@ -4,5 +4,6 @@ block title
     | Bookmarks
 
 block content
-    h3 something is happening
-    h1= user
+    h1 Bookmarks
+    for bookmark in user.bookmarks
+        img(src='#{bookmark.url}')

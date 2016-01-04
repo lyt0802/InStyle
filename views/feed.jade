@@ -4,9 +4,19 @@ block title
     | Feed
 
 block content
+    if verified != ''
+        div(class='alert alert-success')
+            button(type='button', class='close', data-dismiss='alert')
+                span &times;
+            p= verified
     h1 Feed
     form(action='/search', method='POST', id='searchForm')
-        input(type='text', name='search')
+        input(type='text', name='search', id='searchTextBox')
+        input(type='radio', name='searchType', value='users')
+        | Users
+        input(type='radio', name='searchType', value='tags')
+        | Tags
+
         button(type='button', id='search') Search
     a(href='/profile') Profile
     br
@@ -23,5 +33,13 @@ block script
                     alert(res);
                     $('#searchResults').append(res);
                 });
+            });
+            $('#searchTextBox').on({
+                keydown: function(event) {
+                    if (event.which === 32) return false;
+                },
+                change: function() {
+                    this.value = this.value.replace('/\s/g', '');
+                }
             });
         });

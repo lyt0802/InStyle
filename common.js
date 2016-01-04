@@ -7,6 +7,15 @@ module.exports = function(app){
                 res.redirect('/');
             }
         },
+
+        isActive: function(req, res, next) {
+            if (req.isAuthenticated()) {
+                next();
+            } else {
+                res.redirect('/profile');
+            }
+        },
+
         isNotLoggedIn: function(req, res, next) {
             if (!req.isAuthenticated()) {
                next();

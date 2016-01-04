@@ -5,19 +5,19 @@ var session = require('express-session');
 var flash = require('connect-flash');
 var methodOverride = require('method-override');
 
-module.exports = function(app) { 
+module.exports = function(app) {
     app.use('/static', express.static('public'));
 
     app.use(morgan('dev'));
 
     app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({extended:true})); 
+    app.use(bodyParser.urlencoded({extended:true}));
     app.use(session({ secret: 'password', resave: true, saveUninitialized: false}));
     app.use(flash());
 
     app.locals.pretty = true;
     app.set('views', process.cwd() + '/views'); 
-    app.set('view engine', 'jade'); 
+    app.set('view engine', 'jade');
 
     app.use(methodOverride(function(req, res) {
         if (req.body && typeof req.body === 'object' && '_method' in req.body) {

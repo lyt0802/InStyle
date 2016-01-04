@@ -18,6 +18,13 @@ block content
                 +alert(inexistentEmail)
             else if wrongPassword != ''
                 +alert(wrongPassword)
+            else if passwordmismatch != ''
+                +alert(passwordmismatch)
+            else if verified != ''
+                div(class='alert alert-success')
+                    button(type='button', class='close', data-dismiss='alert')
+                        span &times;
+                    p= verified
 
             ul(class='nav nav-tabs')
                 li(class='active')
@@ -37,5 +44,6 @@ block content
                         input(type='text', name='lastName', placeholder='Last Name', class='form-control')
                         input(type='email', name='email', placeholder='Email', class='form-control')
                         input(type='password', name='password', placeholder='Password', class='form-control')
+                        input(type='password', name='confirmationPassword', placeholder='Confirm Password', class='form-control')
                         button(type='submit', class='btn btn-success') Sign Up
                         button(type='reset', class='btn btn-default') Reset

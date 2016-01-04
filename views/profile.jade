@@ -10,6 +10,11 @@ block content
         input(type='hidden',name='id', value='#{user._id}')
         button(type='submit') Follow
     div(class='container')
+        if verify != ''
+            div(class='alert alert-danger')
+                button(type='button', class='close', data-dismiss='alert')
+                    span &times;
+                p= verify
         div(class='row')
             div(class='col-xs-3')
                 if user.profilePicture
@@ -45,7 +50,7 @@ block content
                                 button(type='button', class='editImage btn btn-primary') Edit
                                 form(method='POST', action='/imageInfo/' + '#{image._id}', id='imageInfoForm', class='form hidden')
                                     input(type='hidden', name='_method', value='PUT')
-                                    textarea(form='imageInfoForm', name='description', placeholder='Description') #{image.description}
+                                    input(type='text', name='description', value='#{image.description}',  placeholder='Description')
                                     input(type='text', data-role='tagsinput', name='tags', value='#{image.tags}',  placeholder='Tags')
                                     button(type='submit',class='edit btn btn-primary') Submit
                                 form(method='POST', action='/deleteImage/' + '#{image._id}', class='form hidden')
@@ -74,6 +79,7 @@ block script
                     if (res === 'true') {
                         var containingDiv = form.parent();
                         containingDiv.remove();
+                        location.reload();
                     } else {
                         alert(res);
                     }

@@ -5,9 +5,9 @@ var imageSchema = new mongoose.Schema({
     upvoteCount: {type: Number, default:0},
     downvoteCount: {type: Number, default:0},
     uploadedOn: {type: Date, default: Date.now()},
-    description: {type: String},
+    description: {type: String, default: ''},
     uploadedBy: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
-    tags: [{type: String}],
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref:'Tag'}],
     upvoteUsers: [{ type: mongoose.Schema.Types.ObjectId, ref:'User'}],
     downvoteUsers: [{ type: mongoose.Schema.Types.ObjectId, ref:'User'}]
 });

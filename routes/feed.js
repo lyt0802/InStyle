@@ -1,17 +1,18 @@
 var Image = require('../models/image');
 var User = require('../models/user');
+var Tag = require('../models/tag');
 
 module.exports = function(app){
     app.get('/feed', app.common.isLoggedIn, function(req, res) {
-        res.render('feed.jade');
+        res.render('feed.jade', { verified: req.flash('verified')});
     });
 
     app.get('/explore', app.common.isLoggedIn, function(req,res){
         //console.log('HERE FOR REAL');
-        
+
         Image.find({ _id: { $nin: req.user.upvotedImages.concat(req.user.downvotedImages) } })
              .exec(function(err, images) {
-                if (err) console.log(err); 
+                if (err) console.log(err);
                 else res.render('explore.jade', {email: req.user.email, images: images });
              });
     });
@@ -22,8 +23,39 @@ module.exports = function(app){
              .exec(function(err, image) {
                 if (err) console.log(err);
                 else {
+                    console.log(req.body);
                     image.description = req.body.description;
-                    image.tags = req.body.tags.split(','); 
+                    var splitTags = req.body.tags.split(',');
+                    console.log("splitTags -------------------" +  splitTags)
+                    var tags = [];
+                    for (i = 0; i < splitTags.length; i++) {
+                        var tempTag = new Tag({
+                            tagName: splitTags[i],
+                            images: [ image._id ]
+                        });
+                        tags.push(tempTag);
+                    }
+                    for (i = 0; i < tags.length; i++) {
+                        Tag.findOne({ tagName: tags[i].tagName })
+                           .exec(function(err, tag) {
+                                if (err) console.log(err);
+                                else if (! tag) {
+                                    image.tags.push(tags[i]._id);
+                                    console.log(tags[i].tagName);
+                                } else {
+                                    tag.images.push(image._id);
+                                    tag.save(function(err) {
+                                        console.log(err);
+                                    });
+                                    tags.splice(i,1);
+                                    image.tags.push(tag._id);
+                                    console.log('HERE');
+                                }
+                           });
+                    }
+                    Tag.create(tags, function(err) {
+                        if (err) console.log(err);
+                    });
                     image.save(function(err){
                         if (err) console.log(err);
                         else{
@@ -58,7 +90,7 @@ module.exports = function(app){
                             console.log(err);
                         });
                     }
-                    image.remove(); 
+                    image.remove();
                     res.send('true');
                 } else {
                     res.send('false');
@@ -82,13 +114,16 @@ module.exports = function(app){
 
     app.post('/bookmark/:id', app.common.isLoggedIn, function(req, res){
         //req.params is what is in the url, and req.body is what is in the form
-        req.user.bookmarks.push(req.params.id);
-        req.user.save(function(err) {
-            if (err) console.log(err);
-            else res.send('good');
-        });
+        if (req.user.bookmarks.indexOf(req.params.id) == -1) {
+            req.user.bookmarks.push(req.params.id);
+            req.user.save(function(err) {
+                if (err) console.log(err);
+                else res.send('good');
+            });
+        } else res.send('bad');
     });
     app.post('/search/', app.common.isLoggedIn, function(req, res) {
+        console.log(req.body);
         if (req.body.search === '') {
             User.find({ _id: { $nin: [req.user._id] } })
                 .select('email')
@@ -96,6 +131,28 @@ module.exports = function(app){
                     if (err) console.log(err);
                     else res.render('searchedUsers.jade', { users: users });
                 });
+        } else {
+            if (req.body.searchType === 'users') {
+                var search = req.body.search;
+                console.log(search);
+                User.find({
+                    $or: [
+                        {'firstName': new RegExp('[a-zA-Z]*' + search + '[a-zA-Z]*') },
+                        {'lastName': new RegExp('[a-zA-Z]*' + search + '[a-zA-Z]*')},
+                        {'email': new RegExp('\w*' + search + '\w*')}
+                    ]
+                }).exec(function(err, users) {
+                    console.log(users);
+                    if (err) console.log(err);
+                    else res.send(users);
+                });
+            } else {
+               /* var search = req.body.search;*/
+                //Image.find({})
+                     //.exec(function(err, images){
+
+                     /*});*/
+            }
         }
     });
 
